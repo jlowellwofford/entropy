@@ -1,5 +1,9 @@
 package entropy
 
-func GetEntropy() (int, error) {
-	return getEntropy()
+func GetEntCnt() (int, error) {
+	return getEntCnt()
+}
+
+func AddToEntCnt(add int) error {
+	return addToEntCnt(add)
 }
