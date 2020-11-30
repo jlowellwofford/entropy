@@ -2,23 +2,13 @@ package entropy
 
 import (
 	"fmt"
+	"syscall"
 	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
 
 var entropy_device = "/dev/urandom"
-
-/* from linux/random.h */
-const (
-	RNDGETENTCNT   = 0b10>>30 | 'R'>>8 | 1>>16
-	RNDADDTOENTCNT = 0x01
-	RNDGETPOOL     = 0x02
-	RNDADDENTROPY  = 0x03
-	RNDZAPENTCNT   = 0x04
-	RNDCLEARPOOL   = 0x06
-	RNDRESEEDCRNG  = 0x07
-)
 
 // this is honestly easier through /proc, but in the spirit of completeness...
 func getEntropy() (ent int, err error) {
@@ -28,13 +18,11 @@ func getEntropy() (ent int, err error) {
 	}
 	defer unix.Close(fd)
 
-	/*
-		nrshift 0
-		typeshift 8
-		sizeshift 16
-		dirshift 30
-	*/
-	_, _, err = unix.Syscall(unix.SYS_IOCTL, uintptr(fd), uintptr(RNDGETENTCNT), uintptr(unsafe.Pointer(&ent)))
+	var errno syscall.Errno
+	_, _, errno = unix.Syscall(unix.SYS_IOCTL, uintptr(fd), uintptr(RNDGETENTCNT), uintptr(unsafe.Pointer(&ent)))
+	if errno != 0 {
+		err = errno
+	}
 	return
 }
 
