@@ -71,14 +71,26 @@ func main() {
 	case "add":
 		fallthrough
 	case "addentropy":
-		if len(os.Args) != 3 {
+		if len(os.Args) < 3 || len(os.Args) > 4 {
 			usageFatal("addtoentcnt requires a file path as an option")
+		}
+		var quality = 1.0
+		if len(os.Args) == 4 {
+			quality, err = strconv.ParseFloat(os.Args[3], 32)
+			if err != nil {
+				fatal("couldn't parse quality option, must be a float from 0.0 - 1.0: %v", err)
+			}
+			if quality < 0 || quality > 1 {
+				fatal("quality must be in the range of 0.0 - 1.0")
+			}
 		}
 		var buf []byte
 		if buf, err = ioutil.ReadFile(os.Args[2]); err != nil {
 			fatal("could not read file %s: %v", os.Args[2], err)
 		}
-		if err = entropy.AddEntropy(len(buf), buf); err != nil {
+		bits := int(float64(len(buf)) * 8 * quality)
+		fmt.Printf("adding %d bytes with %d bits of entropy\n", len(buf), bits)
+		if err = entropy.AddEntropy(bits, buf); err != nil {
 			fatal("failed to add entropy: %v", err)
 		}
 	case "zap":
