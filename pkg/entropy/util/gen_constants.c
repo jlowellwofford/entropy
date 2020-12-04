@@ -1,5 +1,11 @@
-// This simple program writes constants.go 
-// It uses the Linux headers to generate these contatns.
+/* gen_constanc.c: this simple programe writes `constants_linux.go` based on available headers.
+ *
+ * Author: J. Lowell Wofford <lowell@lanl.gov>
+ *
+ * This software is open source software available under the BSD-3 license.
+ * Copyright (c) 2020, J. Lowell Wofford.
+ * See LICENSE file for details.
+ */
 
 #include <fcntl.h>
 #include <linux/random.h>

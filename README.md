@@ -37,3 +37,7 @@ Commands:
 # Package
 
 The `entropy` package provides a basic wrapper for all IOCTL functions provided by the kernel.
+
+# Authors
+
+- J. Lowell Wofford <lowell@lanl.gov>
