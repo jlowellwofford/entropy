@@ -1,43 +1,27 @@
-# About
+# github.com/jlowellwofford/entropy/pkg/entropy
 
-Entropy is a simple go pkg and cmdline interface for manipulating entropy in the linux kernel.
+# Overview
 
-It achieves this by using the the IOCTL interface to /dev/(u)random.
+This package provides an API that wraps all of the IOCTL calls on the `/dev/(u)random` devices.  These IOCTLs require important functionality beyond just reading/writing `/dev/(u)random`.  Of particular imporance, they allow for adding to and clearing the entropy count on the system.
 
-# Some basic theory
+The entropy count is intended to provide an estimate of how much information (in the Shannon sense) is stored in the entropy pool.  The `/dev/random` device will only provide at maximum the number of bits in the entropy count.
 
-The linux kernel simulates randomness by keeping a pool of data, estimating its information entropy, and generating data out of it using SHA hashes.
+Note: all entropy count values are in bits, not bytes.
 
-When information is added to the pool it gets "mixed" into the pool with a CRC-like algorithm; it doesn't actually add the raw data.
+The kernel makes no attempt to estimate the entropy of data.  It's up to the user of the API to provide those estimates. That is why, e.g. the `AddEntropy` function, which adds bytes to the pool, requires the user to also provide the entropy count.
 
-Optionally, when information is added, the entropy count of the pool can be incrememnted.  This isn't a literal add, but rather an asymptotic algorithm that approaches the pool size.
+# Intended use
 
-Information can be added to the pool by writing to `/dev/random` or `/dev/urandom`, but this will not increment the entropy count.  This package/command provide an interface to the IOCTLs that provide extended userspace functionality for manipulating randomness.  Of particular note, the `AddToEntCnt()` function adds bits to the entropy count and the `AddEntropy()` function adds bytes to the pool while also incrementing entropy bits.
+This package and the associated command was originaly created to provide an easy interface for artificially injecting entropy into the kernel to accelerate entropy gathering when booting large numbers of VMs for test clusters.  This pkg provides a generic interface that could be used to, e.g. create a goland version of programs like [rng-trools](https://github.com/nhorman/rng-tools) or [haveged](http://www.issihosts.com/haveged/).  
 
+# See also
 
-# Command
-The `entropy` command has the following usage information:
+Command documentation [README](cmd/entropy/README.md)
 
-```
-Usage: entropy <command> [<opts>...]
+Kernel source `devices/char/random.c`
 
-Commands:
-
-        get(entropy)                    - get the current system entropy.
-        addto(entcnt) <num>             - (superuser) Add <num> bits to the current entropy count.
-                                                                          Note: this does not literally increase entropy count by <num>.  The kernel adds using an asymptotic algorithm.  
-                                                                          See <drivers/char/random.c> for details.
-        add(entropy) <file> [<quality>] - (superuser) Add the contents of <file> to entropy, incrementing entropy by the byte-length of the file. 
-                                                                          The optional <quality> specifies the percentage of total data to count as Shannon entropy (default: 1, which is highly unlikely).
-        zap(entcnt)                     - (superuser) Clear the kernel entropy count.
-        clear(pool)                     - (superuser) Clear the entropy pool and counters (on modern linux, this just does zapentcnt).
-        reseed(crng)                    - (superuser) Reseed the CRNG.
-```
-
-# Package
-
-The `entropy` package provides a basic wrapper for all IOCTL functions provided by the kernel.
+Man page `random(4)`
 
 # Authors
 
-- J. Lowell Wofford <lowell@lanl.gov>
+- J. Lowell Wofford <lowell@lanl.gov

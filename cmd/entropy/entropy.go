@@ -15,7 +15,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/jlowellwofford/entropy/pkg/entropy"
+	"github.com/jlowellwofford/entropy"
 )
 
 func usage() {
