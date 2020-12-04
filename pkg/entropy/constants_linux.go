@@ -11,4 +11,3 @@ const (
 	RNDCLEARPOOL   = 0x5206
 	RNDRESEEDCRNG  = 0x5207
 )
-

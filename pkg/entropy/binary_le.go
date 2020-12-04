@@ -1,4 +1,6 @@
-/* binary_arm64.go: sets the host byte order for arm64
+// +build 386 amd64 amd64p32 arm arm64 ppc64le mipsle mips64p32le riscv riscv64 wasm
+
+/* binary_amd64.go: sets the host byte order for amd64
  *
  * Author: J. Lowell Wofford <lowell@lanl.gov>
  *
